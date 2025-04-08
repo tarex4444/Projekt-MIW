@@ -8,8 +8,7 @@ namespace MIWProjekt
 {
     static class ObjectSelection
     {
-        private static Random rand = new Random();
-        public static TestObject TournamentSelection(List<TestObject> generation, int tournamentSize)
+        public static TestObject TournamentSelection(List<TestObject> generation, int tournamentSize, Random rand)
         {
             var tournament = new List<TestObject>();
             

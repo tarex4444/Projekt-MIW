@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Printing;
+using System.Runtime.Intrinsics.X86;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -14,6 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using OxyPlot;
+using OxyPlot.Axes;
 using OxyPlot.Series;
 namespace MIWProjekt
 {
@@ -21,13 +23,13 @@ namespace MIWProjekt
     {
         public graphPoint(double x, int y)
         {
-            this.x = y;
-            this.y = y;
+            X = x;
+            Y = y;
         }
-        public double x { get; }
-        public int y { get; }
+        public double X { get; set; }
+        public int Y { get; set; }
 
-        public override string ToString() => $"{x}, {y}";
+        public override string ToString() => $"{X}, {Y}";
     }
     /// <summary>
     /// Logika interakcji dla klasy UserControl1.xaml
@@ -38,8 +40,13 @@ namespace MIWProjekt
         private const int PopSize = 29;
         private const int TournSize = 3;
         private const int PopIter = 50;
+        private const int ParameterCount = 2;
+        private const int BitsPerParam = 8;
         private const double MutRate = 0.20;
-
+        private double best;
+        private double avg;
+        private graphPoint bestPoint = new graphPoint();
+        private graphPoint avgPoint = new graphPoint();
         private List<graphPoint> bestList = new List<graphPoint>();
         private List<graphPoint> avgList = new List<graphPoint>();
         private static Random rand = new Random();
@@ -54,16 +61,16 @@ namespace MIWProjekt
 
         private void Task1()
         {
-            graphPoint bestPoint = new graphPoint();
-            graphPoint avgPoint = new graphPoint();
             for (int i = 0; i < PopSize ; i++)
             {
-                var obj = new TestObject();
-                obj.Eval();
+                var obj = new TestObject(ParameterCount, BitsPerParam, rand);
+                obj.EvalTask1();
                 popul.Add(obj);
             }
-            bestPoint = new graphPoint(popul.Max(o => o.FitValue), 0);
-            avgPoint = new graphPoint(popul.Average(o => o.FitValue), 0);
+            best = popul.Max(o => o.FitValue);
+            avg = popul.Average(o => o.FitValue);
+            bestPoint = new graphPoint(best, 0);
+            avgPoint = new graphPoint(avg, 0);
             bestList.Add(bestPoint);
             avgList.Add(avgPoint);
             DisplayStats("Początek");
@@ -74,9 +81,9 @@ namespace MIWProjekt
 
                 for (int i = 0; i < PopSize - 1; i++)
                 {
-                    var selected = ObjectSelection.TournamentSelection(popul, TournSize);
+                    var selected = ObjectSelection.TournamentSelection(popul, TournSize, rand);
                     selected.Mutate(MutRate, rand);
-                    selected.Eval();
+                    selected.EvalTask1();
                     newPop.Add(selected);
                 }
 
@@ -84,8 +91,10 @@ namespace MIWProjekt
                 newPop.Add((TestObject)elite);
 
                 popul = newPop;
-                bestPoint = new graphPoint(popul.Max(o => o.FitValue), iter);
-                avgPoint = new graphPoint(popul.Average(o => o.FitValue), iter);
+                best = popul.Max(o => o.FitValue);
+                avg = popul.Average(o => o.FitValue);
+                bestPoint = new graphPoint(best, iter);
+                avgPoint = new graphPoint(avg, iter);
                 bestList.Add(bestPoint);
                 avgList.Add(avgPoint);
                 DisplayStats($"Iteracja {iter}");
@@ -95,8 +104,6 @@ namespace MIWProjekt
 
         private void DisplayStats(string header)
         {
-            var best = popul.Max(o => o.FitValue);
-            var avg = popul.Average(o =>  o.FitValue);
             OutputPanel.Children.Add(new TextBlock
             {
                 Text = $"{header}: Najlepszy obiekt testowy: {best:F2}, Średnia obiektów: {avg:F2}, Rozmiar populacji: {popul.Count():F0}",
@@ -107,9 +114,14 @@ namespace MIWProjekt
         private void DisplayGraph()
         {
             
-            graph = new PlotModel { Title = "Poziom Najlepszego obiektu testowego i ich średnia" };
+            graph = new PlotModel { Title = "Poziom Najlepszego obiektu testowego i ich średnia" , };
 
-
+            var xAxis = new LinearAxis
+            {
+                Position = AxisPosition.Left,
+                Minimum = -1,
+                Maximum = 3
+            };
             var bestSeries = new LineSeries
             {
                 Title = "Najlepszy obiekt testowy",
@@ -126,13 +138,13 @@ namespace MIWProjekt
             };
             foreach (var point in bestList)
             {
-                bestSeries.Points.Add(new DataPoint(point.x, point.y));
+                bestSeries.Points.Add(new DataPoint(point.Y, point.X));
             }
             foreach(var point in avgList)
             {
-                avgSeries.Points.Add(new DataPoint(point.x, point.y));
+                avgSeries.Points.Add(new DataPoint(point.Y, point.X));
             }
-            
+            graph.Axes.Add(xAxis);
             graph.Series.Add(bestSeries);
             graph.Series.Add(avgSeries);
             DataContext = this;
