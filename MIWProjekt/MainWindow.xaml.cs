@@ -19,6 +19,19 @@ namespace MIWProjekt
         public MainWindow()
         {
             InitializeComponent();
+            TaskViewWindow.Content = new Zadanie1();
+        }
+        private void ShowTask1_Click(object sender, RoutedEventArgs e)
+        {
+            TaskViewWindow.Content = new Zadanie1();
+        }
+        private void ShowTask2_Click(object sender, RoutedEventArgs e)
+        {
+            TaskViewWindow.Content = new Zadanie2();
+        }
+        private void ShowTask3_Click(object sender, RoutedEventArgs e)
+        {
+            TaskViewWindow.Content = new Zadanie3();
         }
     }
 }
