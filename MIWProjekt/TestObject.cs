@@ -14,7 +14,7 @@ namespace MIWProjekt
         public int TotalChromo;
         public bool[] chromoSet;
         public double X1 = 0, X2 = 0, X3 = 0, X4 = 0, FitValue;
-
+        //nowy osobnik
         public TestObject(int ParametersCount, int BitPerParam, Random rand)
         {
             this.XCount = ParametersCount;
@@ -26,7 +26,7 @@ namespace MIWProjekt
                 chromoSet[i] = rand.NextDouble() < 0.5;
             }
         }
-
+        //do klonowania
         public TestObject(bool[] chromosomes, int XCount, int ChromoPerX, double X1, double X2, double X3, double X4, double FitValue)
         {
             this.XCount = XCount;
@@ -39,50 +39,51 @@ namespace MIWProjekt
             this.X4 = X4;
             this.FitValue = FitValue;
         }
-
-        public void EvalTask1()
+        //do rozmnażania przez miłość - ZAWSZE PO UŻYĆ EVAL
+        public TestObject( bool[] chromosomes) 
         {
-            int maxInt = (1 << ChromoPerX) - 1; //Przesunięcie bitowe w lewo o 1 aby podac max mozliwych zapisanych liczb
-            int x1Chromes = 0, x2Chromes = 0;
-            for (int i = 0; i < ChromoPerX; i++)
-            {
-                if (chromoSet[i]) x1Chromes |= (1 << (ChromoPerX - 1 - i));
-                if (chromoSet[i + ChromoPerX]) x2Chromes |= (1 << (ChromoPerX - 1 - i)); //czary bitowe - ustawianie bitów w x2Chromes tak żeby odpowiadały liczbie całkowitej ułożonej z bitów w chromosecie
-
-                X1 = 100.0 * x1Chromes / maxInt;
-                X2 = 100.0 * x2Chromes / maxInt;
-
-                FitValue = Math.Sin(X1 * 0.05) + Math.Sin(X2 * 0.05) + 0.4 * Math.Sin(X1 * 0.15) * Math.Sin(X2 * 0.15);
-            }
+            this.chromoSet = chromosomes;
         }
-        public void EvalTask2()
+
+
+        public void Eval(int TaskNumber)
         {
-            int maxInt = (1 << ChromoPerX) - 1; //Przesunięcie bitowe w lewo o 1 aby podac max mozliwych zapisanych liczb
-            int x1Chromes = 0, x2Chromes = 0;
-            for (int i = 0; i < ChromoPerX; i++)
+            int maxInt, x1Chromes, x2Chromes, x3Chromes, x4Chromes;
+            switch (TaskNumber)
             {
-                if (chromoSet[i]) x1Chromes |= (1 << (ChromoPerX - 1 - i));
-                if (chromoSet[i + ChromoPerX]) x2Chromes |= (1 << (ChromoPerX - 1 - i)); //czary bitowe - ustawianie bitów w x2Chromes tak żeby odpowiadały liczbie całkowitej ułożonej z bitów w chromosecie
+                case 1:
+                        maxInt = (1 << ChromoPerX) - 1; //przesunięcie bitowe w lewo o 1 aby podac max mozliwych zapisanych liczb
+                        x1Chromes = 0; x2Chromes = 0;
+                        for (int i = 0; i < ChromoPerX; i++)
+                        {
+                            if (chromoSet[i]) x1Chromes |= (1 << (ChromoPerX - 1 - i));
+                            if (chromoSet[i + ChromoPerX]) x2Chromes |= (1 << (ChromoPerX - 1 - i)); //czary bitowe - ustawianie bitów w x2Chromes tak żeby odpowiadały liczbie całkowitej ułożonej z bitów w chromosecie
 
-                X1 = 100.0 * x1Chromes / maxInt;
-                X2 = 100.0 * x2Chromes / maxInt;
+                            X1 = 100.0 * x1Chromes / maxInt;
+                            X2 = 100.0 * x2Chromes / maxInt;
 
-                FitValue = Math.Sin(X1 * 0.05) + Math.Sin(X2 * 0.05) + 0.4 * Math.Sin(X1 * 0.15) * Math.Sin(X2 * 0.15);
-            }
-        }
-        public void EvalTask3()
-        {
-            int maxInt = (1 << ChromoPerX) - 1; //Przesunięcie bitowe w lewo o 1 aby podac max mozliwych zapisanych liczb
-            int x1Chromes = 0, x2Chromes = 0;
-            for (int i = 0; i < ChromoPerX; i++)
-            {
-                if (chromoSet[i]) x1Chromes |= (1 << (ChromoPerX - 1 - i));
-                if (chromoSet[i + ChromoPerX]) x2Chromes |= (1 << (ChromoPerX - 1 - i)); //czary bitowe - ustawianie bitów w x2Chromes tak żeby odpowiadały liczbie całkowitej ułożonej z bitów w chromosecie               
-            }
-            X1 = 100.0 * x1Chromes / maxInt;
-            X2 = 100.0 * x2Chromes / maxInt;
+                            FitValue = Math.Sin(X1 * 0.05) + Math.Sin(X2 * 0.05) + 0.4 * Math.Sin(X1 * 0.15) * Math.Sin(X2 * 0.15);
+                        }
+                    break;
+                case 2:
+                    maxInt = (1 << ChromoPerX) - 1; //przesunięcie bitowe w lewo o 1 aby podac max mozliwych zapisanych liczb
+                    x1Chromes = 0; x2Chromes = 0; x3Chromes = 0;
+                    for (int i = 0; i < ChromoPerX; i++)
+                    {
+                        if (chromoSet[i]) x1Chromes |= (1 << (ChromoPerX - 1 - i));
+                        if (chromoSet[i + ChromoPerX]) x2Chromes |= (1 << (ChromoPerX - 1 - i)); //czary bitowe - ustawianie bitów w xXChromes tak żeby odpowiadały liczbie całkowitej ułożonej z bitów w chromosecie
+                        if (chromoSet[i + 2*ChromoPerX]) x3Chromes |= (1 << (ChromoPerX - 1 - i));
 
-            FitValue = Math.Sin(X1 * 0.05) + Math.Sin(X2 * 0.05) + 0.4 * Math.Sin(X1 * 0.15) * Math.Sin(X2 * 0.15);
+                        X1 = 3.0 * x1Chromes / maxInt;
+                        X2 = 3.0 * x2Chromes / maxInt;
+                        X3 = 3.0 * x3Chromes / maxInt;
+
+                        FitValue = 0;
+                    }
+                    break;
+                case 3:
+                    break;
+            }               
         }
 
         public void Mutate(double mutationRate, Random random)
@@ -99,6 +100,7 @@ namespace MIWProjekt
         {
             return new TestObject(chromoSet, XCount, ChromoPerX, X1, X2, X3, X4, FitValue);
         }
+        
     }
 }
 

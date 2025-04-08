@@ -11,6 +11,18 @@ using System.Windows.Shapes;
 
 namespace MIWProjekt
 {
+    public struct graphPoint
+    {
+        public graphPoint(double x, int y)
+        {
+            X = x;
+            Y = y;
+        }
+        public double X { get; set; }
+        public int Y { get; set; }
+
+        public override string ToString() => $"{X}, {Y}";
+    }
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>

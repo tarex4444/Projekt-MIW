@@ -19,18 +19,7 @@ using OxyPlot.Axes;
 using OxyPlot.Series;
 namespace MIWProjekt
 {
-    public struct graphPoint
-    {
-        public graphPoint(double x, int y)
-        {
-            X = x;
-            Y = y;
-        }
-        public double X { get; set; }
-        public int Y { get; set; }
-
-        public override string ToString() => $"{X}, {Y}";
-    }
+    
     /// <summary>
     /// Logika interakcji dla klasy UserControl1.xaml
     /// </summary>
@@ -64,7 +53,7 @@ namespace MIWProjekt
             for (int i = 0; i < PopSize ; i++)
             {
                 var obj = new TestObject(ParameterCount, BitsPerParam, rand);
-                obj.EvalTask1();
+                obj.Eval(1);
                 popul.Add(obj);
             }
             best = popul.Max(o => o.FitValue);
@@ -81,9 +70,9 @@ namespace MIWProjekt
 
                 for (int i = 0; i < PopSize - 1; i++)
                 {
-                    var selected = ObjectSelection.TournamentSelection(popul, TournSize, rand);
+                    var selected = ObjectSelection.TournamentSelection(popul, TournSize, rand, 1);
                     selected.Mutate(MutRate, rand);
-                    selected.EvalTask1();
+                    selected.Eval(1);
                     newPop.Add(selected);
                 }
 
