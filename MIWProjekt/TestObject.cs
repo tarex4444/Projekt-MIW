@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input.Manipulations;
 
 namespace MIWProjekt
 {
@@ -124,14 +125,21 @@ namespace MIWProjekt
                     }
                     break;
                 case 3:
-                    /*maxInt = (1 << ChromoPerX) - 1; 
-                    x1Chromes = 0; x2Chromes = 0;
+                    maxInt = (1 << ChromoPerX) - 1; 
+                    x1Chromes = 0; x2Chromes = 0; x3Chromes = 0; x4Chromes = 0; x5Chromes = 0; x6Chromes = 0; x7Chromes = 0; x8Chromes = 0; x9Chromes = 0;
                     for (int i = 0; i < ChromoPerX; i++)
                     {
                         if (chromoSet[i]) x1Chromes |= (1 << (ChromoPerX - 1 - i));
-                        if (chromoSet[i + ChromoPerX]) x2Chromes |= (1 << (ChromoPerX - 1 - i));                          
+                        if (chromoSet[i + ChromoPerX]) x2Chromes |= (1 << (ChromoPerX - 1 - i));
+                        if (chromoSet[i + 2*ChromoPerX]) x3Chromes |= (1 << (ChromoPerX - 1 - i));
+                        if (chromoSet[i + 3*ChromoPerX]) x4Chromes |= (1 << (ChromoPerX - 1 - i));
+                        if (chromoSet[i + 4*ChromoPerX]) x5Chromes |= (1 << (ChromoPerX - 1 - i));
+                        if (chromoSet[i + 5*ChromoPerX]) x6Chromes |= (1 << (ChromoPerX - 1 - i));
+                        if (chromoSet[i + 6*ChromoPerX]) x7Chromes |= (1 << (ChromoPerX - 1 - i));
+                        if (chromoSet[i + 7*ChromoPerX]) x8Chromes |= (1 << (ChromoPerX - 1 - i));
+                        if (chromoSet[i + 8*ChromoPerX]) x9Chromes |= (1 << (ChromoPerX - 1 - i));
                     }
-                    X1 = (20.0 * x1Chromes / maxInt)-10;
+                    X1 = (20.0 * x1Chromes / maxInt) - 10;
                     X2 = (20.0 * x2Chromes / maxInt) - 10;
                     X3 = (20.0 * x3Chromes / maxInt) - 10;
                     X4 = (20.0 * x4Chromes / maxInt) - 10;
@@ -141,7 +149,11 @@ namespace MIWProjekt
                     X8 = (20.0 * x8Chromes / maxInt) - 10;
                     X9 = (20.0 * x9Chromes / maxInt) - 10;
 
-                    FitValue = Math.Sin(X1 * 0.05) + Math.Sin(X2 * 0.05) + 0.4 * Math.Sin(X1 * 0.15) * Math.Sin(X2 * 0.15);*/
+                    (int, int, double)[] XORvalues = {(0, 0, 0), (0, 1, 1), (1, 0, 1), (1, 1, 0) };
+                    foreach((int, int, double) value in XORvalues)
+                    {
+                        FitValue += Math.Pow(CalculateNetworkOutput(value.Item1, value.Item2) - value.Item3, 2);
+                    }
                     break;
             }               
         }
@@ -159,6 +171,18 @@ namespace MIWProjekt
         public TestObject Clone(int TaskNumber)
         {
             return new TestObject(chromoSet, XCount, ChromoPerX, X1, X2, X3, X4, FitValue, TaskNumber);
+        }
+        
+        public double CalculateNetworkOutput(double in1, double in2)
+        {
+            double h1 = Sigmoid(X1 * in1 + X2 * in2 + X3);
+            double h2 = Sigmoid(X4 * in1 + X5 * in2 + X6);
+            double output = Sigmoid(X7 * h1 + X8 * h2 + X9);
+            return output;
+        }
+        public static double Sigmoid(double x)
+        {
+            return (1.0 / (1.0 + Math.Exp(-x)));
         }
     }
 }

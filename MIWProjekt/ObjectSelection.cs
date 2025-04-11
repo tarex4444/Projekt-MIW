@@ -24,7 +24,7 @@ namespace MIWProjekt
                 selected = tournament.OrderByDescending(obj => obj.FitValue).First().Clone(TaskNumber);
                 selected.Eval(TaskNumber);
             }
-            else if (TaskNumber == 2) 
+            else
             {
                 selected = tournament.OrderByDescending(obj => obj.FitValue).Last().Clone(TaskNumber);
                 selected.Eval(TaskNumber);               

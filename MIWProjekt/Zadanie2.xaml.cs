@@ -119,8 +119,8 @@ namespace MIWProjekt
             var xAxis = new LinearAxis
             {
                 Position = AxisPosition.Left,
-                Minimum = -1,
-                Maximum = 3
+                Minimum = 0,
+                Maximum = 10
             };
             var bestSeries = new LineSeries
             {

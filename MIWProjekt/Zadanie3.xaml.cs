@@ -20,10 +20,6 @@ using OxyPlot.Axes;
 using OxyPlot.Series;
 namespace MIWProjekt
 {
-
-    /// <summary>
-    /// Logika interakcji dla klasy UserControl1.xaml
-    /// </summary>
     public partial class Zadanie3 : UserControl
     {
         public PlotModel graph { get; set; }
@@ -32,7 +28,7 @@ namespace MIWProjekt
         private const int PopIter = 200;
         private const int ParameterCount = 9;
         private const int BitsPerParam = 6;
-        private const double MutRate = 0.20;
+        private const double MutRate = 0.25;
 
         private double best;
         private double avg;
@@ -55,7 +51,7 @@ namespace MIWProjekt
         {
             for (int i = 0; i < PopSize; i++)
             {
-                var obj = new TestObject(ParameterCount, BitsPerParam, rand, 2);
+                var obj = new TestObject(ParameterCount, BitsPerParam, rand, 3);
                 obj.Eval(2);
                 popul.Add(obj);
             }
@@ -73,12 +69,12 @@ namespace MIWProjekt
 
                 for (int i = 0; i < PopSize - 1; i++)
                 {
-                    newPop.Add(ObjectSelection.TournamentSelection(popul, TournSize, rand, 2));
+                    newPop.Add(ObjectSelection.TournamentSelection(popul, TournSize, rand, 3));
                 }
-                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[0], newPop[1], rand, 2));
-                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[2], newPop[3], rand, 2));
-                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[8], newPop[9], rand, 2));
-                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[newPop.Count - 1], newPop[newPop.Count - 2], rand, 2));
+                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[0], newPop[1], rand, 3));
+                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[2], newPop[3], rand, 3));
+                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[8], newPop[9], rand, 3));
+                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[newPop.Count - 1], newPop[newPop.Count - 2], rand, 3));
                 foreach (var child in childrenOfTheNewGen)
                 {
                     newPop.Add(child);
@@ -119,8 +115,8 @@ namespace MIWProjekt
             var xAxis = new LinearAxis
             {
                 Position = AxisPosition.Left,
-                Minimum = -1,
-                Maximum = 3
+                Minimum = 0,
+                Maximum = 10
             };
             var bestSeries = new LineSeries
             {
