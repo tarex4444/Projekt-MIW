@@ -14,6 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
 using OxyPlot;
 using OxyPlot.Axes;
 using OxyPlot.Series;
@@ -26,12 +27,13 @@ namespace MIWProjekt
     public partial class Zadanie3 : UserControl
     {
         public PlotModel graph { get; set; }
-        private const int PopSize = 29;
+        private const int PopSize = 13;
         private const int TournSize = 3;
-        private const int PopIter = 50;
-        private const int ParameterCount = 2;
-        private const int BitsPerParam = 8;
+        private const int PopIter = 200;
+        private const int ParameterCount = 9;
+        private const int BitsPerParam = 6;
         private const double MutRate = 0.20;
+
         private double best;
         private double avg;
         private graphPoint bestPoint = new graphPoint();
@@ -45,6 +47,7 @@ namespace MIWProjekt
         public Zadanie3()
         {
             InitializeComponent();
+
             Task3();
         }
 
@@ -52,41 +55,49 @@ namespace MIWProjekt
         {
             for (int i = 0; i < PopSize; i++)
             {
-                var obj = new TestObject(ParameterCount, BitsPerParam, rand);
-                obj.Eval(3);
+                var obj = new TestObject(ParameterCount, BitsPerParam, rand, 2);
+                obj.Eval(2);
                 popul.Add(obj);
             }
-            best = popul.Max(o => o.FitValue);
+            var childrenOfTheNewGen = new List<TestObject>();
+            best = popul.Min(o => o.FitValue);
             avg = popul.Average(o => o.FitValue);
             bestPoint = new graphPoint(best, 0);
             avgPoint = new graphPoint(avg, 0);
             bestList.Add(bestPoint);
             avgList.Add(avgPoint);
             DisplayStats("Początek");
-
             for (int iter = 1; iter <= PopIter; iter++)
             {
                 List<TestObject> newPop = new();
 
                 for (int i = 0; i < PopSize - 1; i++)
                 {
-                    var selected = ObjectSelection.TournamentSelection(popul, TournSize, rand, 3);
-                    selected.Mutate(MutRate, rand);
-                    selected.Eval(3);
-                    newPop.Add(selected);
+                    newPop.Add(ObjectSelection.TournamentSelection(popul, TournSize, rand, 2));
                 }
-
-                var elite = popul.OrderByDescending(p => p.FitValue).First();
+                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[0], newPop[1], rand, 2));
+                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[2], newPop[3], rand, 2));
+                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[8], newPop[9], rand, 2));
+                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[newPop.Count - 1], newPop[newPop.Count - 2], rand, 2));
+                foreach (var child in childrenOfTheNewGen)
+                {
+                    newPop.Add(child);
+                }
+                childrenOfTheNewGen.Clear();
+                for (int i = 4; i < PopSize - 1; i++)
+                {
+                    newPop[i].Mutate(MutRate, rand);
+                }
+                var elite = popul.OrderByDescending(p => p.FitValue).Last();
                 newPop.Add((TestObject)elite);
-
-                popul = newPop;
-                best = popul.Max(o => o.FitValue);
-                avg = popul.Average(o => o.FitValue);
+                best = newPop.Min(o => o.FitValue);
+                avg = newPop.Average(o => o.FitValue);
                 bestPoint = new graphPoint(best, iter);
                 avgPoint = new graphPoint(avg, iter);
                 bestList.Add(bestPoint);
                 avgList.Add(avgPoint);
                 DisplayStats($"Iteracja {iter}");
+                popul = newPop;
             }
             DisplayGraph();
         }
@@ -138,5 +149,6 @@ namespace MIWProjekt
             graph.Series.Add(avgSeries);
             DataContext = this;
         }
+
     }
 }

@@ -52,7 +52,7 @@ namespace MIWProjekt
         {
             for (int i = 0; i < PopSize ; i++)
             {
-                var obj = new TestObject(ParameterCount, BitsPerParam, rand);
+                var obj = new TestObject(ParameterCount, BitsPerParam, rand, 1);
                 obj.Eval(1);
                 popul.Add(obj);
             }
@@ -70,23 +70,22 @@ namespace MIWProjekt
 
                 for (int i = 0; i < PopSize - 1; i++)
                 {
-                    var selected = ObjectSelection.TournamentSelection(popul, TournSize, rand, 1);
-                    selected.Mutate(MutRate, rand);
-                    selected.Eval(1);
-                    newPop.Add(selected);
+                    newPop.Add(ObjectSelection.TournamentSelection(popul, TournSize, rand, 1));
                 }
-
+                foreach(var pop in newPop)
+                {
+                    pop.Mutate(MutRate, rand);
+                }
                 var elite = popul.OrderByDescending(p => p.FitValue).First();
-                newPop.Add((TestObject)elite);
-
-                popul = newPop;
-                best = popul.Max(o => o.FitValue);
-                avg = popul.Average(o => o.FitValue);
+                newPop.Add((TestObject)elite);             
+                best = newPop.Max(o => o.FitValue);
+                avg = newPop.Average(o => o.FitValue);
                 bestPoint = new graphPoint(best, iter);
                 avgPoint = new graphPoint(avg, iter);
                 bestList.Add(bestPoint);
                 avgList.Add(avgPoint);
                 DisplayStats($"Iteracja {iter}");
+                popul = newPop;
             }
             DisplayGraph();
         }
