@@ -28,7 +28,7 @@ namespace MIWProjekt
         private const int PopIter = 200;
         private const int ParameterCount = 9;
         private const int BitsPerParam = 6;
-        private const double MutRate = 0.25;
+        private const double MutRate = 0.10;
 
         private double best;
         private double avg;
@@ -52,7 +52,7 @@ namespace MIWProjekt
             for (int i = 0; i < PopSize; i++)
             {
                 var obj = new TestObject(ParameterCount, BitsPerParam, rand, 3);
-                obj.Eval(2);
+                obj.Eval(3);
                 popul.Add(obj);
             }
             var childrenOfTheNewGen = new List<TestObject>();
@@ -71,13 +71,20 @@ namespace MIWProjekt
                 {
                     newPop.Add(ObjectSelection.TournamentSelection(popul, TournSize, rand, 3));
                 }
+                int parent1 = newPop.Count - 1;
+                int parent2 = newPop.Count - 2;
                 childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[0], newPop[1], rand, 3));
                 childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[2], newPop[3], rand, 3));
                 childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[8], newPop[9], rand, 3));
-                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[newPop.Count - 1], newPop[newPop.Count - 2], rand, 3));
+                childrenOfTheNewGen.AddRange(ObjectSelection.Crossbreed(newPop[parent1], newPop[parent2], rand, 3));
+                int[] parentsToBeKilled = {0, 1, 2, 3, 8, 9, parent1, parent2 };
                 foreach (var child in childrenOfTheNewGen)
                 {
                     newPop.Add(child);
+                }
+                foreach (int i in parentsToBeKilled)
+                {
+                    newPop.RemoveAt(i);
                 }
                 childrenOfTheNewGen.Clear();
                 for (int i = 4; i < PopSize - 1; i++)
